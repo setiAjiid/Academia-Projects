@@ -11,8 +11,6 @@ CREATE TABLE members(
     UNIQUE (email)
 );
 
-SELECT * FROM members;
-
 CREATE TABLE genres (
 	id CHAR(5) NOT NULL,
     genre_name VARCHAR(50) NOT NULL,
@@ -110,7 +108,6 @@ CREATE TABLE authors (
     PRIMARY KEY (id)
 );
 
-
 CREATE TABLE publishers (
     id CHAR(5),
     nama VARCHAR(50) NOT NULL,
@@ -147,9 +144,7 @@ DROP PRIMARY KEY;
 
 -- Ganti id jadi NIK
 ALTER TABLE members
-DROP id;
-
-ALTER TABLE members
+DROP id,
 ADD NIK CHAR(16) NOT NULL,
 ADD PRIMARY KEY (NIK);
 
@@ -161,7 +156,6 @@ ADD member_NIK CHAR(16) NOT NULL,
 ADD CONSTRAINT fk_phone_number_members
 		FOREIGN KEY (member_NIK) REFERENCES members(NIK)
 			ON UPDATE CASCADE ON DELETE CASCADE;
-
 -- tambah FK di borrows
 ALTER TABLE borrows
 DROP member_id,
@@ -174,11 +168,11 @@ ADD CONSTRAINT fk_borrows_members
 -- Hapus tabel phone_numbers
 DROP TABLE phone_numbers;
 
--- tambah att phone number di tabel member
+-- tambah attribut phone number di tabel member
 ALTER TABLE members
 ADD phone_number VARCHAR(13) NOT NULL;
 
--- tambah att phone number di tabel employees
+-- tambah attribut phone number di tabel employees
 ALTER TABLE employees
 ADD phone_number VARCHAR(13) NOT NULL;
 
@@ -207,7 +201,6 @@ VALUES
 ("PB004", "Golden Dragon Publishing", "3456 Bamboo Lane", "China", "goldendragon3456@gmail.com"),
 ("PB005", "Red River Press", "7890 Cherry Blossom Drive", "Perancis", "redriver7890@gmail.com");
 
-SELECT *FROM books;
 INSERT INTO books
 VALUES
 ("BK001", "9780123456789", "Jejak Peradaban: Kisah Perjalanan Sejarah Indonesia", 2010, "Menggali sejarah Indonesia, buku ini menyajikan peristiwa penting dan tokoh berpengaruh yang membentuk peradaban bangsa, membawa pembaca memahami akar budaya dan identitas Indonesia.", 
@@ -221,8 +214,12 @@ VALUES
 ("BK005", "9784567890123", "Light at the End of the Road: A Story of Hope", 2024, "Dalam perjalanan penuh tantangan, seorang tokoh menemukan kekuatan dari harapan dan persahabatan. Novel ini mengajak pembaca merenungkan arti kehidupan dan pentingnya percaya pada masa depan yang lebih baik.",
 4, "GR002", "AU004", "PB004");
 
+INSERT INTO positions
+VALUES
+("PS001", "Pustakawan", True),
+("PS002", "Kebersihan", False), 
+("PS003", "Keamanan", False);
 
-Describe employees;
 INSERT INTO employees
 VALUES 
 ("EM001", "Andi Gading", "andi@gmail.com", 'P', "Jl. Merdeka No.10", "PS001", "081628492610"),
@@ -231,7 +228,6 @@ VALUES
 ("EM004", "Lili Sari", "lili@gmail.com", 'P', "Jl. Cendana No.8", "PS002", "088385793136"),
 ("EM005", "Alexander Agus", "agus@gmail.com", 'L', "Jl. Bunga No.12", "PS001", "088273659814");
 
-SELECT * FROM members;
 INSERT INTO members
 VALUES 
 ("Citra Kirana", "citra@gmail.com", 'P', "Jl. Cinta No.45", "3326162409040002", "088374628921"),
@@ -240,33 +236,104 @@ VALUES
 ("Teddy Widodo", "teddy@gmail.com", "L", "Jl. Anggrek No.17","3305040901072053", "085782306818"), 
 ("Beni Soeharti", "beni@gmail.com", "L", "Jl. Raya No.56",  "3326161509700004", "0812345678919");
 
-SELECT * FROM borrows;
 INSERT INTO borrows
 VALUES 
 ("BR001", "2024-05-06", "2024-05-20", "2024-05-20", NULL, "EM004", "3326162409040002"),
-("BR002", "2024-07-14", "2024-07-29", "2024-07-28", 5000,00, "EM001", "3525017006950028"),
-("BR003", "2024-09-22", "2024-09-08", "2024-09-06", 10000,00, "EM003", "3525017006520020"),
-("BR004", "2024-10-03", "2024-10-20", "2024-10-17", 15000,00, "EM002", "3305040901072053"),
+("BR002", "2024-07-14", "2024-07-29", "2024-07-28", 5000.00, "EM001", "3525017006950028"),
+("BR003", "2024-09-22", "2024-09-08", "2024-09-06", 10000.00, "EM003", "3525017006520020"),
+("BR004", "2024-10-03", "2024-10-20", "2024-10-17", 15000.00, "EM002", "3305040901072053"),
 ("BR005", "2024-11-02", NULL, "2024-11-16", NULL, "EM005", "3326161509700004");
 
+INSERT INTO books_borrows
+VALUES
+("BK001", "BR001"),
+("BK003", "BR002"),
+("BK001", "BR002"),
+("BK004", "BR003"),
+("BK005", "BR004"),
+("BK002", "BR005");
 
 
+-- Perintah No.6 
+-- Ubah id di tabel borrow jadi INT AUTO_INCREMENT
+-- Drop FK pada tabel books_borrows
+ALTER TABLE books_borrows
+DROP FOREIGN KEY fk_books_borrows_borrows;
 
+-- Drop pk + add kembali id dengan tipe data baru dan jadikan PK
+ALTER TABLE borrows
+DROP PRIMARY KEY,
+DROP id,
+ADD id INT AUTO_INCREMENT FIRST,
+ADD PRIMARY KEY(id);
 
+-- drop FK books_id dan drop PK kompositnya +
+-- drop PK komposit dan drop borrow_id lalu masukkan kembali dgn tipe baru
+ALTER TABLE books_borrows
+DROP FOREIGN KEY fk_books_borrows_books,
+DROP PRIMARY KEY,
+DROP borrow_id,
+ADD borrow_id INT NOT NULL;
 
+-- Hapus seluruh isi data pada tabel
+TRUNCATE books_borrows;
 
+-- tambahkan PK komposit dan FK"-nya
+ALTER TABLE books_borrows
+ADD PRIMARY KEY(book_id, borrow_id),
+ADD CONSTRAINT fk_books_borrows_borrows
+	FOREIGN KEY (borrow_id) REFERENCES borrows(id)
+		ON UPDATE CASCADE ON DELETE CASCADE,
+ADD CONSTRAINT fk_books_borrows_books
+	FOREIGN KEY (book_id) REFERENCES books(id)
+		ON UPDATE CASCADE ON DELETE CASCADE;
 
+-- isi kembali data dengan borrow_id sudah menjadi INT
+INSERT INTO books_borrows
+VALUES
+("BK001", 1),
+("BK003", 2),
+("BK001", 2),
+("BK004", 3),
+("BK005", 4),
+("BK002", 5);
 
+-- Perintah No.7
+UPDATE borrows
+SET return_date = CURRENT_DATE()
+WHERE member_NIK = "3326161509700004";
 
+-- Perintah No. 8
+UPDATE borrows
+SET fine = null
+WHERE member_NIK IN ("3525017006520020", "3305040901072053");
 
+-- Perintah No.9
+SELECT NIK FROM members WHERE nama = "Beni Soeharti"; -- 3326161509700004
+SELECT id FROM employees WHERE nama = "Alexander Agus"; -- EM005
+INSERT INTO borrows(borrow_date, return_date, due_date, fine, member_NIK, employee_id)
+VALUES ("2024-11-03", NULL, borrow_date+14, NULL, "3326161509700004", "EM005");
 
+SELECT * FROM books;
+UPDATE books
+SET stock = stock-1
+WHERE title = "Complete Dictionary of Information Technology Terms";
 
+SELECT id FROM books WHERE title = "Complete Dictionary of Information Technology Terms"; -- BK003
+SELECT * FROM borrows; -- 6
+INSERT INTO books_borrows
+VALUES 	("BK003", 6);
 
+-- Perintah No. 10
+SELECT id FROM positions WHERE position_name = "Pustakawan";
+INSERT INTO employees
+VALUES ("EM006", "Aspas Gata", "aspasgata@gmail.com", 'L', "Jl. Badut No.62", "PS001", "0895323390308"); 
 
+-- Perintah No. 11
+UPDATE employees
+SET nama = "Andi Haki", gender = 'L', phone_number = "081628492611"
+WHERE nama = "Andi Gading";
 
-
-
-TRUNCATE genres;
-
-DROP DATABASE library;
-
+-- Perintah No. 12
+DELETE FROM members WHERE nama = "Jasmine Neroli";
+DELETE FROM employees WHERE nama = "Aspas Gata";
