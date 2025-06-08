@@ -21,7 +21,7 @@ Berikut adalah daftar anggota kelompok A09 beserta NRP masing-masing:
 Buatlah program untuk memperkirakan nilai fungsi di antara titik yang sudah diketahui dengan metode interpolasi Newton-Gregory Backward (NGB) dengan deskripsi soal dan tabel fungsi sebagai berikut:
 
 ### Deskripsi Soal
-Carilah nilai $f(x)$ ketika $x = 16$ dengan menggunakan metode Newton-Gregory Backward dan $y$ sebenarnya adalah $897{,}104$. Hitung juga nilai galat sebenarnya ($E_t$) antara hasil interpolasi dan nilai sebenarnya.
+Carilah nilai $f(x)$ ketika $x = 16$ dengan menggunakan metode Newton-Gregory Backward dan $y$ sebenarnya adalah $897104$. Hitung juga nilai galat sebenarnya ($E_t$) antara hasil interpolasi dan nilai sebenarnya.
 
 ### Tabel Fungsi
 
