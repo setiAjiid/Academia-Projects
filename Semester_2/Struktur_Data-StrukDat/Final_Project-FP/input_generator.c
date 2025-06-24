@@ -2,7 +2,20 @@
 #include <stdlib.h>
 #include <time.h>
 
-void generatefile(const char *filename, int n) {
+void sorted_data(const char *filename, int n) {
+    FILE *file = fopen(filename, "w");
+    if (file != NULL) {
+        for (int i = 1; i <= n; i++) {
+            fprintf(file, "%d", i);
+            if (i < n) {
+                fprintf(file, " ");
+            }
+        }
+        fclose(file);
+    }
+}
+
+void random_data(const char *filename, int n) {
     srand(time(NULL));
 
     int arr[n];
@@ -20,15 +33,21 @@ void generatefile(const char *filename, int n) {
     FILE *file = fopen(filename, "w");
     if (file != NULL) {
         for (int i = 0; i < n; i++) {
-            fprintf(file, "%d ", arr[i]);
+            fprintf(file, "%d", arr[i]);
+            if (i < n - 1) {
+                fprintf(file, " ");
+            }
         }
         fclose(file);
     }
 }
 
 int main() {
-    generatefile("input_100.txt", 100);
-    generatefile("input_500.txt", 500);
-    generatefile("input_1000.txt", 1000);
+    sorted_data("sorted_100.txt", 100);
+    sorted_data("sorted_500.txt", 500);
+    sorted_data("sorted_1000.txt", 1000);
+    random_data("random_100.txt", 100);
+    random_data("random_500.txt", 500);
+    random_data("random_1000.txt", 1000);
     return 0;
 }
