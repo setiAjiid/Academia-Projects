@@ -275,7 +275,7 @@ Secara ringkas, inti dari kode ini dipaparkan di dalam _main function_. Berikut 
 
 ## C. Implementasi Hahsmap (with Chaining)
 
-```c
+```cpp
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -292,7 +292,7 @@ Di awal program `hashmap.cpp` disertakan beberapa include-an header yang dibutuh
 diantaranya adalah `vector` yang digunakan untuk array hashmap, `chrono` untuk perhitungan waktu, `iostream` untuk I/O, `fstream` untuk pembacaan
 input / entry dari luar, `cstdlib` untuk pembuatan linked list yang digunakan dalam HashMap teknik Chaining dan `cstdio` untuk fungsi-fungsi seperti `snprintf`.
 
-```c
+```cpp
 struct HashNode {
   int key;
   HashNode *next;
@@ -320,6 +320,103 @@ char *p_buf = buf;
   }
 ```
 
-Untuk slot hashmap dibuat menggunakan HashNode
+Untuk slot hashmap dibuat menggunakan HashNode dengan banyak slot 1001 dengan metode chaining, kemudian untuk memperoleh hasil hashing dari sebuah entry, digunakan
+algoritma DJB2 di fungsi hash(key) yang di modulo dengan angka 1001 agar tidak out-of-bound (pengaksesan array di luar batas). DJB2 bekerja dengan cara mengkonversi angka
+menjadi string yang memuat angka yang ingin di hash, kemudian terdapat variabel `hash` yang berisi 5831 yang nanti nya akan di-shift ke kanan sebanyak 5 kali (dikali 33) dan ditambahkan dengan
+nilai hash awal dan ditambahkan dengan nilai c (nilai ASCII index ke-i dari entry hash). `hash = ((hash << 5) + hash) + c`.
+
+```cpp
+void insert(int key, int &steps) {
+    int index = hash(key);
+    HashNode *node = table[index];
+    while (node) {
+      steps++;
+      if (node->key == key)
+        return;
+      node = node->next;
+    }
+    steps++;
+    HashNode *newNode = new HashNode(key);
+    newNode->next = table[index];
+    table[index] = newNode;
+  }
+```
+
+Fungsi ini dibuat untuk memasukkan suatu entry kedalam hashmap dan meng-translasi key dari entry kedalam hash function yang dijadikan sebagai
+index dari hashmap. Jika sudah terdapat suatu node yang memiliki hasil hash-ing yang sama, maka kami atasi dengan menggunakan teknik chaining untuk
+menghindari collision dengan cara menchain nilai-nilai yang sudah ada seperti linked list dengan penambahan node berada didepan.
+
+```cpp
+bool search(int key, int &steps) {
+    int index = hash(key);
+    HashNode *node = table[index];
+    while (node) {
+      steps++;
+      if (node->key == key)
+        return true;
+      node = node->next;
+    }
+    return false;
+  }
+```
+
+Fungsi ini dibuat untuk mencari suatu entri didalam hashmap berdasarkan hasil hash-ing. Apabila dalam index ke-i yang ditentukan oleh hashing function
+tidak didapati entri yang ingin dicari maka pencarian akan diteruskan di index tersebut seperti traversal dalam linked list. Apabila ditemukan maka
+dikembalikan nilai `true`, apabila tidak ditemukan dikembalikan nilai `false`.
+
+```cpp
+void update(int key, int &steps) {
+    int index = hash(key);
+    HashNode *node = table[index];
+    while (node) {
+      steps++;
+      if (node->key == key) {
+        return;
+      }
+      node = node->next;
+    }
+  }
+```
+
+// Penjelasan
+
+```c
+bool remove(int key, int &steps) {
+    int index = hash(key);
+    HashNode *node = table[index];
+    HashNode *prev = nullptr;
+    while (node) {
+      steps++;
+      if (node->key == key) {
+        if (prev)
+          prev->next = node->next;
+        else
+          table[index] = node->next;
+        delete node;
+        return true;
+      }
+      prev = node;
+      node = node->next;
+    }
+    return false;
+  }
+```
+
+// Penjelasan
+
+```cpp
+vector<int> loadData(const string &filename) {
+  ifstream file(filename);
+  vector<int> data;
+  int key;
+  while (file >> key)
+    data.push_back(key);
+  return data;
+}
+```
+
+// Penjelasan
+
+// Ringkasan fungsi main
 
 ## D. Kesimpulan
