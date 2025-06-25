@@ -325,6 +325,8 @@ algoritma DJB2 di fungsi hash(key) yang di modulo dengan angka 1001 agar tidak o
 menjadi string yang memuat angka yang ingin di hash, kemudian terdapat variabel `hash` yang berisi 5831 yang nanti nya akan di-shift ke kanan sebanyak 5 kali (dikali 33) dan ditambahkan dengan
 nilai hash awal dan ditambahkan dengan nilai c (nilai ASCII index ke-i dari entry hash). `hash = ((hash << 5) + hash) + c`.
 
+### Fungsi `insert()`
+
 ```cpp
 void insert(int key, int &steps) {
     int index = hash(key);
@@ -346,6 +348,8 @@ Fungsi ini dibuat untuk memasukkan suatu entry kedalam hashmap dan meng-translas
 index dari hashmap. Jika sudah terdapat suatu node yang memiliki hasil hash-ing yang sama, maka kami atasi dengan menggunakan teknik chaining untuk
 menghindari collision dengan cara menchain nilai-nilai yang sudah ada seperti linked list dengan penambahan node berada didepan.
 
+### Fungsi `search()`
+
 ```cpp
 bool search(int key, int &steps) {
     int index = hash(key);
@@ -364,21 +368,39 @@ Fungsi ini dibuat untuk mencari suatu entri didalam hashmap berdasarkan hasil ha
 tidak didapati entri yang ingin dicari maka pencarian akan diteruskan di index tersebut seperti traversal dalam linked list. Apabila ditemukan maka
 dikembalikan nilai `true`, apabila tidak ditemukan dikembalikan nilai `false`.
 
+### Fungsi `remove()`
+
 ```cpp
-void update(int key, int &steps) {
+void update(int key, int newVal, int &steps) {
     int index = hash(key);
     HashNode *node = table[index];
+    HashNode *prevNode = NULL;
+
     while (node) {
       steps++;
       if (node->key == key) {
-        return;
+        HashNode *nextNode = node->next;
+        if (prevNode)
+          prevNode->next = nextNode;
+        else
+          table[index] = nextNode;
+        delete node;
+        break;
       }
+
+      prevNode = node;
       node = node->next;
     }
+
+    insert(newVal, steps);
   }
 ```
 
-// Penjelasan
+Fungsi ini dibuat untuk mengupdate nilai dari suatu node yang ada di dalam hashmap menjadi nilai yang baru. Proses update dilakukan dengan prosedur
+mencari terlebih dahulu lokasi hash nilai key lama kemudian menghapus node tersebut, kemudian memanggil fungsi `insert` yang sudah didefiniskan untuk membuat
+dan meletakkan hash baru dari key yang baru kedalam hashmap.
+
+### Fungsi `remove()`
 
 ```c
 bool remove(int key, int &steps) {
@@ -402,7 +424,12 @@ bool remove(int key, int &steps) {
   }
 ```
 
-// Penjelasan
+Fungsi ini akan menghapus sebuah node entry dari hashmap dengan key yang dicari. Pencarian key dilakukan dengan mencari terlebih dahulu
+hasil hash dari key yang akan dihapus. Apabila dalam hashmap tidak ditemukan key dengan hasil hash yang dimaksud, maka fungsi akan
+mengembalikan nilai false. Namun apabila ditemukan maka akan mencari node yang dimaksud dengan meng-iterasi setiap node yang terdapat di lokasi
+hash tersebut sampai menemukan node yang dimaksud dan menghapus node tersebut.
+
+### Fungsi `loadData()`
 
 ```cpp
 vector<int> loadData(const string &filename) {
@@ -415,8 +442,22 @@ vector<int> loadData(const string &filename) {
 }
 ```
 
-// Penjelasan
+Fungsi ini dibuat untuk membaca data input dari file. Setiap angka yang terdapat dalam file akan disimpan ke dalam `vector<int> data`. Kemudian, data ini akan
+digunakan sebagai input utama dalam proses penyisipan data ke dalam hashmap.
 
-// Ringkasan fungsi main
+### Fungsi `main(int argc, char* argv[])`
+
+Secara garis besar, saat menjalankan program setidaknya satu buah argumen dicantumkan yang dimana argumen ini berisikan path file yang digunakan
+untuk memasukkan data kedalam hashmap. Kemudian dilakukan load data dari file yang sudah diberikan di argumen dan memasukkan satu-per-satu entry yang ada dalam file kedalam vector data
+yang nantinya akan digunakan dalam proses insertion kedalam hashmap menggunakan fungsi `loadData`.
+
+Untuk peng-inputan data kedalam hashmap digunakan fungsi `insert` yang memasukkan satu-per-satu data yang ada didalam vector. Kemudian saat melakukan proses insertion
+juga dicatat berapa banyak step atau langkah yang diperlukan untuk prosedur ini dan juga waktu yang diperlukan untuk seluruh data dimasukkan kedalam hashmap menggunakan bantuan
+library `chrono`.
+
+Kemudian hal serupa juga dilakukan pada prosedur searching, update, dan juga delete yang masing-masing juga mencatat banyaknya step atau langkah yang diperlukan
+dan juga waktu yang dibutuhkan setiap prosedur sampai selesai menggunakan library `chrono`.
+
+Di akhir, diberikan seluruh hasil analisis mulai dari prosedur insert sampai delete yang disajikan dalam rata-rata waktu dan langkah relatif terhadap banyaknya data awal.
 
 ## D. Kesimpulan

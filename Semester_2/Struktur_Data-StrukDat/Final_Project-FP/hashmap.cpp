@@ -69,16 +69,28 @@ public:
     return false;
   }
 
-  void update(int key, int &steps) {
+  void update(int key, int newVal, int &steps) {
     int index = hash(key);
     HashNode *node = table[index];
+    HashNode *prevNode = NULL;
+
     while (node) {
       steps++;
       if (node->key == key) {
-        return;
+        HashNode *nextNode = node->next;
+        if (prevNode)
+          prevNode->next = nextNode;
+        else
+          table[index] = nextNode;
+        delete node;
+        break;
       }
+
+      prevNode = node;
       node = node->next;
     }
+
+    insert(newVal, steps);
   }
 
   bool remove(int key, int &steps) {
@@ -112,6 +124,11 @@ vector<int> loadData(const string &filename) {
 }
 
 int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    cout << "Usage: ./hashmap <input_file>" << endl;
+    return 0;
+  }
+
   string filename = argv[1];
   vector<int> data = loadData(filename);
   HashMap hashmap;
@@ -156,7 +173,8 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < 1000; ++i) {
     int steps = 0;
     start = chrono::high_resolution_clock::now();
-    hashmap.update(testKey, steps);
+    int newVal = testKey + 10000;
+    hashmap.update(testKey, newVal, steps);
     end = chrono::high_resolution_clock::now();
     totalUpdateTime +=
         chrono::duration_cast<chrono::nanoseconds>(end - start).count();
