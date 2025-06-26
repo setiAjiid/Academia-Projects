@@ -1,5 +1,4 @@
-
-## A. Pembuatan Generator Data 
+## A. Pembuatan Generator Data
 
 Berikut penjelasan mengenai program generator data dalam bahasa c. Program ini dibuat untuk menghasilkan file yang berisi data secara terurut dan random yang ukurannya bisa disesuaikan. Program ini nantinya akan digunakan dalam pengujian B+Tree dan Hashmap (with chaining).
 
@@ -87,6 +86,7 @@ Di fungsi main ini akan memanggil fungsi `sorted_data()` dan `random_data()` den
 Berikut adalah penjelasan mengenai implementasi B+ Tree dalam bahasa C++ yang saya buat. Program ini dirancang untuk menyimpan data dalam struktur B+ Tree, yang merupakan variasi dari B-Tree dengan beberapa keunggulan, terutama dalam hal efisiensi pencarian dan penyimpanan data.
 
 ### Header dan Konstanta
+
 ---
 
 ```cpp
@@ -109,6 +109,7 @@ Di awal program, saya menyertakan beberapa header penting:
 Selain itu, terdapat konstanta `MAX_KEYS = 4`, yang berarti setiap node pada B+ Tree dapat menyimpan maksimal 4 kunci sebelum harus dipecah (split). Nilai ini membuat tree tetap seimbang dan sederhana untuk simulasi.
 
 ### Struktur BPlusNode
+
 ---
 
 ```cpp
@@ -129,9 +130,10 @@ Setiap node memiliki atribut sebagai berikut:
 - `cek_leaf`: Menandakan apakah node ini adalah leaf atau bukan.
 - `keys`: Daftar kunci yang disimpan.
 - `children`: Pointer ke node-node anak (untuk node internal).
-- `next`: Pointer ke node leaf selanjutnya, yang sangat penting untuk proses *range query*.
+- `next`: Pointer ke node leaf selanjutnya, yang sangat penting untuk proses _range query_.
 
 ## Kelas BPlusTree
+
 Saya membungkus semua fungsi dan struktur utama tree ke dalam class BPlusTree. Berikut penjelasan tiap fungsinya:
 
 ### Konstruktor `BPlusTree()`
@@ -166,7 +168,6 @@ Fungsi ini saya buat untuk menyisipkan kunci baru ke dalam tree. Jika root sudah
 
 Saya juga menambahkan variabel `insertCnt` untuk menghitung jumlah langkah selama proses insert agar bisa dianalisis performanya nanti.
 
-
 ### Fungsi `insertNonFull()`
 
 ```cpp
@@ -190,13 +191,12 @@ private:
 
 Fungsi ini merupakan inti dari proses penyisipan. Jika node yang dituju adalah leaf, posisi penyisipan akan dicari menggunakan `upper_bound()`, kemudian key akan dimasukkan pada posisi tersebut. Jika node bukan leaf, maka akan dicari anak yang sesuai, lalu dicek apakah anak tersebut sudah penuh atau belum. Jika penuh, anak tersebut harus di-split terlebih dahulu sebelum melanjutkan proses penyisipan. Variabel `steps` digunakan untuk menghitung seberapa dalam atau kompleks proses insert berlangsung, yang penting untuk evaluasi performa algoritma.
 
-
 ### Fungsi `splitChild()`
 
 ```cpp
 private:
     BPlusNode* root;
-    int insertSteps = 0;    
+    int insertSteps = 0;
     void splitChild(BPlusNode* parent, int index) {
         BPlusNode* child = parent->children[index];
         BPlusNode* sibling = new BPlusNode(child->cek_leaf);
@@ -254,7 +254,7 @@ public:
 ...
     void update(int key, int& steps) {
         if (search(key, steps)) {
-            steps++; 
+            steps++;
         }
     }
 ```
@@ -268,7 +268,7 @@ public:
 ...
     bool remove(int key, int& steps) {
         if (search(key, steps)) {
-            steps++; 
+            steps++;
             return true;
         }
         return false;
@@ -310,7 +310,7 @@ Fungsi ini saya buat khusus untuk mencari semua kunci dalam rentang `[x, y]`. Sa
 
 ```cpp
 int getInsertSteps() const { return insertSteps; }
-``` 
+```
 
 Fungsi sederhana ini hanya mengembalikan total langkah yang digunakan untuk proses insert pada laporan performa.
 
@@ -330,30 +330,214 @@ vector<int> loadData(const string& filename) {
 Fungsi ini saya buat untuk membaca data input dari file. Setiap angka yang terdapat dalam file akan disimpan ke dalam `vector<int> data`. Kemudian, data ini akan digunakan sebagai input utama dalam proses penyisipan data ke dalam tree.
 
 ### Fungsi `main(int argc, char* argv[])`
+
 ---
 
 Secara ringkas, inti dari kode ini dipaparkan di dalam _main function_. Berikut adalah penjelasan alur fungsi utama program:
 
 1. **Validasi Argumen Input**  
-    Program memeriksa apakah argumen input (nama file data) sudah diberikan. Jika tidak, program akan keluar.
+   Program memeriksa apakah argumen input (nama file data) sudah diberikan. Jika tidak, program akan keluar.
 
 2. **Membaca Data dari File**  
-    Fungsi `loadData()` dipanggil untuk membaca seluruh data dari file ke dalam sebuah `vector<int>`.
+   Fungsi `loadData()` dipanggil untuk membaca seluruh data dari file ke dalam sebuah `vector<int>`.
 
 3. **Inisialisasi dan Penyisipan Data ke B+ Tree**  
-    Objek `BPlusTree` dibuat. Seluruh data dari file kemudian dimasukkan ke dalam tree menggunakan fungsi `insert()`. Selama proses ini, waktu eksekusi dan jumlah langkah penyisipan dihitung.
+   Objek `BPlusTree` dibuat. Seluruh data dari file kemudian dimasukkan ke dalam tree menggunakan fungsi `insert()`. Selama proses ini, waktu eksekusi dan jumlah langkah penyisipan dihitung.
 
 4. **Pengujian Operasi Search, Update, dan Delete**  
-    Salah satu kunci (secara random, misal: `data[3]`) dipilih untuk diuji. Operasi pencarian (`search`), update (`update`), dan penghapusan (`remove`) dilakukan sebanyak `size of data` kali untuk mengukur performa dan jumlah langkah rata-rata.
+   Salah satu kunci (secara random, misal: `data[3]`) dipilih untuk diuji. Operasi pencarian (`search`), update (`update`), dan penghapusan (`remove`) dilakukan sebanyak `size of data` kali untuk mengukur performa dan jumlah langkah rata-rata.
 
 5. **Pengujian Range Query**  
-    Fungsi `rangeQuery()` dijalankan untuk mengukur performa pencarian data dalam rentang tertentu.
+   Fungsi `rangeQuery()` dijalankan untuk mengukur performa pencarian data dalam rentang tertentu.
 
 6. **Menampilkan Hasil Analisis**  
-    Seluruh hasil analisis, seperti waktu eksekusi dan jumlah langkah untuk setiap operasi, ditampilkan ke terminal agar dapat dievaluasi.
+   Seluruh hasil analisis, seperti waktu eksekusi dan jumlah langkah untuk setiap operasi, ditampilkan ke terminal agar dapat dievaluasi.
 
 ## C. Implementasi Hahsmap (with Chaining)
 
+```cpp
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <chrono>
+#include <cstdio>
+#include <cstdlib>
 
+using namespace std;
+
+const int TABLE_SIZE = 1001;
+```
+
+Di awal program `hashmap.cpp` disertakan beberapa include-an header yang dibutuhkan untuk dapat membuat struktur data HashMap ini,
+diantaranya adalah `vector` yang digunakan untuk array hashmap, `chrono` untuk perhitungan waktu, `iostream` untuk I/O, `fstream` untuk pembacaan
+input / entry dari luar, `cstdlib` untuk pembuatan linked list yang digunakan dalam HashMap teknik Chaining dan `cstdio` untuk fungsi-fungsi seperti `snprintf`.
+
+```cpp
+struct HashNode {
+  int key;
+  HashNode *next;
+  HashNode(int k) : key(k), next(nullptr) {}
+};
+
+HashNode *table[TABLE_SIZE];
+
+int hash(int key) {
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%d", key);
+
+char *p_buf = buf;
+
+    unsigned long hash = 5381;
+
+    int c;
+    while ((c = *p_buf++)) {
+      hash = ((hash << 5) + hash) + c;
+    }
+
+    // USING DJB2 HASH FUNCTION
+
+    return hash % TABLE_SIZE;
+  }
+```
+
+Untuk slot hashmap dibuat menggunakan HashNode dengan banyak slot 1001 dengan metode chaining, kemudian untuk memperoleh hasil hashing dari sebuah entry, digunakan
+algoritma DJB2 di fungsi hash(key) yang di modulo dengan angka 1001 agar tidak out-of-bound (pengaksesan array di luar batas). DJB2 bekerja dengan cara mengkonversi angka
+menjadi string yang memuat angka yang ingin di hash, kemudian terdapat variabel `hash` yang berisi 5831 yang nanti nya akan di-shift ke kanan sebanyak 5 kali (dikali 33) dan ditambahkan dengan
+nilai hash awal dan ditambahkan dengan nilai c (nilai ASCII index ke-i dari entry hash). `hash = ((hash << 5) + hash) + c`.
+
+### Fungsi `insert()`
+
+```cpp
+void insert(int key, int &steps) {
+    int index = hash(key);
+    HashNode *node = table[index];
+    while (node) {
+      steps++;
+      if (node->key == key)
+        return;
+      node = node->next;
+    }
+    steps++;
+    HashNode *newNode = new HashNode(key);
+    newNode->next = table[index];
+    table[index] = newNode;
+  }
+```
+
+Fungsi ini dibuat untuk memasukkan suatu entry kedalam hashmap dan meng-translasi key dari entry kedalam hash function yang dijadikan sebagai
+index dari hashmap. Jika sudah terdapat suatu node yang memiliki hasil hash-ing yang sama, maka kami atasi dengan menggunakan teknik chaining untuk
+menghindari collision dengan cara menchain nilai-nilai yang sudah ada seperti linked list dengan penambahan node berada didepan.
+
+### Fungsi `search()`
+
+```cpp
+bool search(int key, int &steps) {
+    int index = hash(key);
+    HashNode *node = table[index];
+    while (node) {
+      steps++;
+      if (node->key == key)
+        return true;
+      node = node->next;
+    }
+    return false;
+  }
+```
+
+Fungsi ini dibuat untuk mencari suatu entri didalam hashmap berdasarkan hasil hash-ing. Apabila dalam index ke-i yang ditentukan oleh hashing function
+tidak didapati entri yang ingin dicari maka pencarian akan diteruskan di index tersebut seperti traversal dalam linked list. Apabila ditemukan maka
+dikembalikan nilai `true`, apabila tidak ditemukan dikembalikan nilai `false`.
+
+### Fungsi `remove()`
+
+```cpp
+void update(int key, int newVal, int &steps) {
+    int index = hash(key);
+    HashNode *node = table[index];
+    HashNode *prevNode = NULL;
+
+    while (node) {
+      steps++;
+      if (node->key == key) {
+        HashNode *nextNode = node->next;
+        if (prevNode)
+          prevNode->next = nextNode;
+        else
+          table[index] = nextNode;
+        delete node;
+        break;
+      }
+
+      prevNode = node;
+      node = node->next;
+    }
+
+    insert(newVal, steps);
+  }
+```
+
+Fungsi ini dibuat untuk mengupdate nilai dari suatu node yang ada di dalam hashmap menjadi nilai yang baru. Proses update dilakukan dengan prosedur
+mencari terlebih dahulu lokasi hash nilai key lama kemudian menghapus node tersebut, kemudian memanggil fungsi `insert` yang sudah didefiniskan untuk membuat
+dan meletakkan hash baru dari key yang baru kedalam hashmap.
+
+### Fungsi `remove()`
+
+```c
+bool remove(int key, int &steps) {
+    int index = hash(key);
+    HashNode *node = table[index];
+    HashNode *prev = nullptr;
+    while (node) {
+      steps++;
+      if (node->key == key) {
+        if (prev)
+          prev->next = node->next;
+        else
+          table[index] = node->next;
+        delete node;
+        return true;
+      }
+      prev = node;
+      node = node->next;
+    }
+    return false;
+  }
+```
+
+Fungsi ini akan menghapus sebuah node entry dari hashmap dengan key yang dicari. Pencarian key dilakukan dengan mencari terlebih dahulu
+hasil hash dari key yang akan dihapus. Apabila dalam hashmap tidak ditemukan key dengan hasil hash yang dimaksud, maka fungsi akan
+mengembalikan nilai false. Namun apabila ditemukan maka akan mencari node yang dimaksud dengan meng-iterasi setiap node yang terdapat di lokasi
+hash tersebut sampai menemukan node yang dimaksud dan menghapus node tersebut.
+
+### Fungsi `loadData()`
+
+```cpp
+vector<int> loadData(const string &filename) {
+  ifstream file(filename);
+  vector<int> data;
+  int key;
+  while (file >> key)
+    data.push_back(key);
+  return data;
+}
+```
+
+Fungsi ini dibuat untuk membaca data input dari file. Setiap angka yang terdapat dalam file akan disimpan ke dalam `vector<int> data`. Kemudian, data ini akan
+digunakan sebagai input utama dalam proses penyisipan data ke dalam hashmap.
+
+### Fungsi `main(int argc, char* argv[])`
+
+Secara garis besar, saat menjalankan program setidaknya satu buah argumen dicantumkan yang dimana argumen ini berisikan path file yang digunakan
+untuk memasukkan data kedalam hashmap. Kemudian dilakukan load data dari file yang sudah diberikan di argumen dan memasukkan satu-per-satu entry yang ada dalam file kedalam vector data
+yang nantinya akan digunakan dalam proses insertion kedalam hashmap menggunakan fungsi `loadData`.
+
+Untuk peng-inputan data kedalam hashmap digunakan fungsi `insert` yang memasukkan satu-per-satu data yang ada didalam vector. Kemudian saat melakukan proses insertion
+juga dicatat berapa banyak step atau langkah yang diperlukan untuk prosedur ini dan juga waktu yang diperlukan untuk seluruh data dimasukkan kedalam hashmap menggunakan bantuan
+library `chrono`.
+
+Kemudian hal serupa juga dilakukan pada prosedur searching, update, dan juga delete yang masing-masing juga mencatat banyaknya step atau langkah yang diperlukan
+dan juga waktu yang dibutuhkan setiap prosedur sampai selesai menggunakan library `chrono`.
+
+Di akhir, diberikan seluruh hasil analisis mulai dari prosedur insert sampai delete yang disajikan dalam rata-rata waktu dan langkah relatif terhadap banyaknya data awal.
 
 ## D. Kesimpulan
