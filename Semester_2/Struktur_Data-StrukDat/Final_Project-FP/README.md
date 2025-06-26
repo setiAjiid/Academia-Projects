@@ -1,5 +1,86 @@
 ## A. Pembuatan Generator Data
 
+Berikut penjelasan mengenai program generator data dalam bahasa c. Program ini dibuat untuk menghasilkan file yang berisi data secara terurut dan random yang ukurannya bisa disesuaikan. Program ini nantinya akan digunakan dalam pengujian B+Tree dan Hashmap (with chaining).
+
+Program ini menghasilkan dua jenis data:
+- Sorted data: Angka dari 1 hingga n, dalam urutan menaik.
+- Random data: Angka dari 1 hingga n, diacak menggunakan algoritma `Fisher-Yates Shuffle`.
+
+Lalu hasilnya disimpan dalam format `.txt`.
+
+### Fungsi sorted_data()
+
+```c
+void sorted_data(const char *filename, int n) {
+    FILE *file = fopen(filename, "w");
+    if (file != NULL) {
+        for (int i = 1; i <= n; i++) {
+            fprintf(file, "%d", i);
+            if (i < n) {
+                fprintf(file, " ");
+            }
+        }
+        fclose(file);
+    }
+}
+```
+
+Fungsi ini akan menuliskan angka 1 hingga n ke dalam file yang dipisahkan dengan spasi.
+
+### Fungsi random_data()
+
+```c
+void random_data(const char *filename, int n) {
+    srand(time(NULL));
+
+    int arr[n];
+    for (int i = 0; i < n; i++) {
+        arr[i] = i + 1;
+    }
+
+    for (int i = n - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+    FILE *file = fopen(filename, "w");
+    if (file != NULL) {
+        for (int i = 0; i < n; i++) {
+            fprintf(file, "%d", arr[i]);
+            if (i < n - 1) {
+                fprintf(file, " ");
+            }
+        }
+        fclose(file);
+    }
+}
+```
+
+Fungsi ini akan membuat array yang isinya angka 1 hingga n. Selanjutnya akan dilakukan pengacakan dengan algoritma `Fisher-Yates Shuffle`:
+- Dimulai dari indeks terakhir sampai indek ke-1.
+- `rand() % (i + 1)` akan menghasilkan indeks acak dari 0 sampai i.
+- Lakukan swap untuk agar data menjadi acak.
+
+Dan yang terakhir, masukkan setiap angka hasil shuffle ke dalam file yang dipisahkan dengan spasi.
+
+### Fungsi main
+
+```c
+int main() {
+    sorted_data("sorted_100.txt", 100);
+    sorted_data("sorted_500.txt", 500);
+    sorted_data("sorted_1000.txt", 1000);
+    random_data("random_100.txt", 100);
+    random_data("random_500.txt", 500);
+    random_data("random_1000.txt", 1000);
+    return 0;
+}
+```
+
+Di fungsi main ini akan memanggil fungsi `sorted_data()` dan `random_data()` dengan argumen nama file dan banyaknya data.
+
 ## B. Implementasi B+ Tree
 
 Berikut adalah penjelasan mengenai implementasi B+ Tree dalam bahasa C++ yang saya buat. Program ini dirancang untuk menyimpan data dalam struktur B+ Tree, yang merupakan variasi dari B-Tree dengan beberapa keunggulan, terutama dalam hal efisiensi pencarian dan penyimpanan data.
@@ -231,10 +312,9 @@ Fungsi ini saya buat khusus untuk mencari semua kunci dalam rentang `[x, y]`. Sa
 int getInsertSteps() const { return insertSteps; }
 ```
 
-Fungsi sederhana ini hanya mengembalikan total langkah yang digunakan untuk proses insert — digunakan untuk laporan performa.
+Fungsi sederhana ini hanya mengembalikan total langkah yang digunakan untuk proses insert pada laporan performa.
 
-### Fungsi loadData(const string& filename)
-
+### Fungsi `loadData()`
 ---
 
 ```cpp
