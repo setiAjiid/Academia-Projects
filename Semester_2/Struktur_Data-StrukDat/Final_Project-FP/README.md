@@ -231,9 +231,9 @@ Fungsi ini saya buat khusus untuk mencari semua kunci dalam rentang `[x, y]`. Sa
 int getInsertSteps() const { return insertSteps; }
 ``` 
 
-Fungsi sederhana ini hanya mengembalikan total langkah yang digunakan untuk proses insert — digunakan untuk laporan performa.
+Fungsi sederhana ini hanya mengembalikan total langkah yang digunakan untuk proses insert pada laporan performa.
 
-### Fungsi loadData(const string& filename)
+### Fungsi `loadData()`
 ---
 
 ```cpp
