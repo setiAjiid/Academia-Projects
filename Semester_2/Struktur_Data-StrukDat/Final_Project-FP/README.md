@@ -1,3 +1,11 @@
+# Laporan Final Praktikum Mata Kuliah Struktur Data _(Final Practicum Report)_
+
+|    NRP     |          Name          |
+| :--------: | :--------------------: |
+| 5025241056 |     Dimas Setiaji      |
+| 5025241061 | Ahmad Satrio Arrohman  |
+| 5025241063 | Ahsin Khuluqil Karim   |
+
 ## A. Pembuatan Generator Data
 
 Berikut penjelasan mengenai program generator data dalam bahasa c. Program ini dibuat untuk menghasilkan file yang berisi data secara terurut dan random yang ukurannya bisa disesuaikan. Program ini nantinya akan digunakan dalam pengujian B+Tree dan Hashmap (with chaining).
