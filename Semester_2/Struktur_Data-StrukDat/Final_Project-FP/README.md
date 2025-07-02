@@ -1,4 +1,4 @@
-# Laporan Final Praktikum Mata Kuliah Struktur Data _(Final Practicum Report)_
+# Laporan Final Projek Mata Kuliah Struktur Data _(Final Project Report)_
 
 |    NRP     |          Name          |
 | :--------: | :--------------------: |
